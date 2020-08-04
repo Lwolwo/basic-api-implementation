@@ -46,4 +46,19 @@ public class RsController {
     RsEvent event = objectMapper.readValue(rsEvent, RsEvent.class);
     rsList.add(event);
   }
+
+  @PostMapping("/rs/amendEvent")
+  public void amendRsEvent(@RequestParam int index, @RequestParam(required = false) String eventName, @RequestParam (required = false) String keyWord) {
+    if (eventName != null) {
+      rsList.get(index - 1).setEventName(eventName);
+    }
+    if (keyWord != null) {
+      rsList.get(index - 1).setKeyWord(keyWord);
+    }
+  }
+
+  @PostMapping("/rs/deleteEvent")
+  public void deleteRsEvent(@RequestParam int index) {
+    rsList.remove(index - 1);
+  }
 }
