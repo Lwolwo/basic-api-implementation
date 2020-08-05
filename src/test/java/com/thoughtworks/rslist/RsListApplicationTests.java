@@ -192,7 +192,6 @@ class RsListApplicationTests {
 
     }
 
-
     @Test
     void contextLoads() throws Exception {
 

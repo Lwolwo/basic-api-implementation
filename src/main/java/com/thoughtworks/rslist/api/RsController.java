@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.thoughtworks.rslist.domain.*;
 import org.hibernate.annotations.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -13,7 +14,7 @@ import java.util.stream.*;
 @RestController
 public class RsController {
   private List<RsEvent> rsList = new ArrayList<>();
-  private Map<String, User> userList = new HashMap<>();
+  private HashMap<String, User> userList = new HashMap();
 
   @GetMapping("/rs/list")
   public List<RsEvent> getRsList(@RequestParam(required = false) Integer start,
@@ -35,14 +36,15 @@ public class RsController {
 //  }
 
   @PostMapping("/rs/addEvent")
-  public void addRsEvent(@RequestBody String rsEvent) throws JsonProcessingException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    RsEvent event = objectMapper.readValue(rsEvent, RsEvent.class);
-    rsList.add(event);
+  public ResponseEntity addRsEvent(@RequestBody RsEvent rsEvent) throws JsonProcessingException {
+    rsList.add(rsEvent);
 
-    if (!userList.containsKey(event.getUser().getUserName())) {
-      userList.put(event.getUser().getUserName(), event.getUser());
+    String userName = rsEvent.getUser().getUserName();
+    if (!userList.containsKey(userName)) {
+      userList.put(userName, rsEvent.getUser());
     }
+
+    return ResponseEntity.created(null).build();
   }
 
   @PatchMapping("/rs/amendEvent")
