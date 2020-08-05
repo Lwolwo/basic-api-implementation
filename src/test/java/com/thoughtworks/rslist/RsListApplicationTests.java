@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.*;
 import com.thoughtworks.rslist.domain.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
+import org.mockito.internal.matchers.Null;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.*;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -235,7 +236,6 @@ class RsListApplicationTests {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
         String jsonString = objectMapper.writeValueAsString(rsEvent);
-
         mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
@@ -248,7 +248,59 @@ class RsListApplicationTests {
         rsEvent.setKeyWord(null);
         mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
 
+    @Test
+    public void user_property_should_suit_rules() throws Exception {
+        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", user);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+
+        user.setUserName(null);
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        user.setUserName("xiaowang1");
+        jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        user.setUserName("xiaowang");
+        user.setGender(null);
+        jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        user.setGender("female");
+        user.setAge(101);
+        jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        user.setAge(17);
+        jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        user.setAge(20);
+        user.setEmail("a.com");
+        jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        user.setEmail("a@thoughtworks.com");
+        user.setPhone(null);
+        jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        user.setPhone("123");
+        jsonString = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
