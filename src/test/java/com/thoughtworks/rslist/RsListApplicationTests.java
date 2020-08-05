@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -111,9 +110,14 @@ class RsListApplicationTests {
     @Test
     @Order(6)
     void should_amend_rs_event() throws Exception {
-        mockMvc.perform(post("/rs/amendEvent")
+        RsEvent amendEventNameEvent = new RsEvent();
+        amendEventNameEvent.setEventName("修改第一条事件");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String amendEventNameJson = objectMapper.writeValueAsString(amendEventNameEvent);
+
+        mockMvc.perform(patch("/rs/amendEvent")
                     .param("index", "1")
-                    .param("eventName", "修改第一条事件")
+                    .content(amendEventNameJson)
                     .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -122,9 +126,13 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$.keyWord", is("无标签")))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(post("/rs/amendEvent")
+        RsEvent amendKeyWordEvent = new RsEvent();
+        amendKeyWordEvent.setKeyWord("其它");
+        String amendKeyWordJson = objectMapper.writeValueAsString(amendKeyWordEvent);
+
+        mockMvc.perform(patch("/rs/amendEvent")
                 .param("index", "2")
-                .param("keyWord", "其它")
+                .content(amendKeyWordJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -133,10 +141,12 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$.keyWord", is("其它")))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(post("/rs/amendEvent")
+        RsEvent amendEvent = new RsEvent("修改第三条事件", "其它");
+        String amendEventJson = objectMapper.writeValueAsString(amendEvent);
+
+        mockMvc.perform(patch("/rs/amendEvent")
                 .param("index", "3")
-                .param("eventName", "修改第三条事件")
-                .param("keyWord", "其它")
+                .content(amendEventJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -150,7 +160,7 @@ class RsListApplicationTests {
     @Order(5) // 全部一起运行时，删除了添加的热搜。单独运行时，需测试删除第三条热搜，并且测试结果为第三条热搜被删除
     void should_delete_rs_event() throws Exception {
         // 全部运行
-        mockMvc.perform(post("/rs/deleteEvent")
+        mockMvc.perform(delete("/rs/deleteEvent")
                 .param("index", "4")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

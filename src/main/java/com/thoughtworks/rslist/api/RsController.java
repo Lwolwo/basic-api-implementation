@@ -47,17 +47,17 @@ public class RsController {
     rsList.add(event);
   }
 
-  @PostMapping("/rs/amendEvent")
-  public void amendRsEvent(@RequestParam int index, @RequestParam(required = false) String eventName, @RequestParam (required = false) String keyWord) {
-    if (eventName != null) {
-      rsList.get(index - 1).setEventName(eventName);
+  @PatchMapping("/rs/amendEvent")
+  public void amendRsEvent(@RequestParam int index, @RequestBody RsEvent rsEvent) {
+    if (rsEvent.getEventName() != null) {
+      rsList.get(index - 1).setEventName(rsEvent.getEventName());
     }
-    if (keyWord != null) {
-      rsList.get(index - 1).setKeyWord(keyWord);
+    if (rsEvent.getKeyWord() != null) {
+      rsList.get(index - 1).setKeyWord(rsEvent.getKeyWord());
     }
   }
 
-  @PostMapping("/rs/deleteEvent")
+  @DeleteMapping("/rs/deleteEvent")
   public void deleteRsEvent(@RequestParam int index) {
     rsList.remove(index - 1);
   }
