@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.thoughtworks.rslist.domain.*;
+import com.thoughtworks.rslist.exception.*;
 import org.hibernate.annotations.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,9 @@ public class RsController {
 
   @GetMapping("/rs/{index}")
   public ResponseEntity getOneOfEvent(@PathVariable int index) {
+    if (index < 1 || index > rsList.size()) {
+      throw new RsEventIndexInvalidException("invalid index");
+    }
     return ResponseEntity.ok(rsList.get(index - 1));
   }
 

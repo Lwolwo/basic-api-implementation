@@ -362,6 +362,22 @@ class RsListApplicationTests {
     }
 
     @Test
+    public void should_throw_index_invalid_exception() throws Exception {
+        mockMvc.perform(get("/rs/0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid index")));
+    }
+
+    @Test
+    public void should_throw_param_invalid_exception() throws Exception {
+        String jsonString = "{\"eventName\":\"添加一条热搜\",\"keyWord\":\"娱乐\",\"user\": {\"user_name\":\"xiaowang1\",\"user_age\": 19,\"user_gender\": \"female\",\"user_email\": \"a@thoughtworks.com\",\"user_phone\": \"18888888888\"}}";
+
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+    }
+
+    @Test
     void contextLoads() throws Exception {
 
     }
