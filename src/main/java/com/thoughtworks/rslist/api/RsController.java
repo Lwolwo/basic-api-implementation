@@ -23,7 +23,7 @@ public class RsController {
     if (start != null && end != null) {
       return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
-    return ResponseEntity.ok(rsList.subList(start - 1, end));
+    return ResponseEntity.ok(rsList);
   }
 
   @GetMapping("/rs/{index}")

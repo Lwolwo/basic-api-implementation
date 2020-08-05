@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.*;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -198,7 +197,6 @@ class RsListApplicationTests {
 
     }
 
-
     @Test
     public void should_add_rs_event_with_user() throws Exception {
         User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
@@ -307,7 +305,7 @@ class RsListApplicationTests {
     }
 
     @Test
-    public void post_method_should_return_201() throws Exception {
+    public void post_method_should_return_201_with_header() throws Exception {
         User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
         RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", user);
 
@@ -319,6 +317,26 @@ class RsListApplicationTests {
                 .andExpect(status().isCreated())
                 .andReturn();
         assertEquals("0", result.getResponse().getHeader("index"));
+    }
+
+    @Test
+    public void list_should_not_contain_user_property() throws Exception {
+        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].eventName", is("添加一条热搜")))
+                .andExpect(jsonPath("$[0].keyWord", is("娱乐")))
+                .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(status().isOk());
+
     }
 
     @Test

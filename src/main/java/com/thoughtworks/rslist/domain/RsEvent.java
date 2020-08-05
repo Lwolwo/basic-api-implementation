@@ -1,5 +1,7 @@
 package com.thoughtworks.rslist.domain;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.validation.*;
 import javax.validation.constraints.*;
 
@@ -26,10 +28,12 @@ public class RsEvent {
         this.user = user;
     }
 
+    @JsonIgnore
     public User getUser() {
         return user;
     }
 
+    @JsonProperty
     public void setUser(User user) {
         this.user = user;
     }
