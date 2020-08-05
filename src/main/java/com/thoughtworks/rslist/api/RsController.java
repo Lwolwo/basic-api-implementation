@@ -3,10 +3,12 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.thoughtworks.rslist.domain.*;
+import com.thoughtworks.rslist.exception.*;
 import org.hibernate.annotations.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -26,8 +28,11 @@ public class RsController {
   }
 
   @GetMapping("/rs/{index}")
-  public RsEvent getOneOfEvent(@PathVariable int index) {
-    return rsList.get(index - 1);
+  public ResponseEntity getOneOfEvent(@PathVariable int index) {
+    if (index < 1 || index > rsList.size()) {
+      throw new RsEventInvalidException("invalid index");
+    }
+    return ResponseEntity.ok(rsList.get(index - 1));
   }
 
 //  @PostMapping("/rs/addEvent")
@@ -36,7 +41,7 @@ public class RsController {
 //  }
 
   @PostMapping("/rs/addEvent")
-  public ResponseEntity addRsEvent(@RequestBody RsEvent rsEvent) throws JsonProcessingException {
+  public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) throws JsonProcessingException {
     rsList.add(rsEvent);
 
     String userName = rsEvent.getUser().getUserName();
