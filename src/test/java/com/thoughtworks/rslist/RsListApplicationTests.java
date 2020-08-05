@@ -176,7 +176,7 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
 
         // 单独运行
-        /*
+
         mockMvc.perform(post("/rs/deleteEvent")
                 .param("index", "3")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -189,8 +189,9 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[1].keyWord", is("无标签")))
                 .andExpect(status().isOk());
-         */
+
     }
+
 
     @Test
     void contextLoads() throws Exception {

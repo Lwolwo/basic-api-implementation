@@ -7,19 +7,13 @@ import org.hibernate.annotations.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 
 @RestController
 public class RsController {
-  private List<RsEvent> rsList = initRsList();
-
-  private List<RsEvent> initRsList() {
-    List<RsEvent> rsList = new ArrayList<>();
-    rsList.add(new RsEvent("第一条事件", "无标签"));
-    rsList.add(new RsEvent("第二条事件", "无标签"));
-    rsList.add(new RsEvent("第三条事件", "无标签"));
-    return rsList;
-  }
+  private List<RsEvent> rsList = new ArrayList<>();
+  private Map<String, User> userList = new HashMap<>();
 
   @GetMapping("/rs/list")
   public List<RsEvent> getRsList(@RequestParam(required = false) Integer start,
@@ -45,6 +39,10 @@ public class RsController {
     ObjectMapper objectMapper = new ObjectMapper();
     RsEvent event = objectMapper.readValue(rsEvent, RsEvent.class);
     rsList.add(event);
+
+    if (!userList.containsKey(event.getUser().getUserName())) {
+      userList.put(event.getUser().getUserName(), event.getUser());
+    }
   }
 
   @PatchMapping("/rs/amendEvent")
@@ -61,4 +59,5 @@ public class RsController {
   public void deleteRsEvent(@RequestParam int index) {
     rsList.remove(index - 1);
   }
+
 }
