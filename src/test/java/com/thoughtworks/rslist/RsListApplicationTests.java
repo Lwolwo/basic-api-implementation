@@ -11,6 +11,8 @@ import org.springframework.http.*;
 import org.springframework.test.web.servlet.*;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.*;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -225,6 +227,29 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void user_keyWord_eventName_should_not_be_null() throws Exception {
+        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", null);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+        String jsonString = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        rsEvent.setUser(user);
+        rsEvent.setEventName(null);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        rsEvent.setEventName("添加一条热搜");
+        rsEvent.setKeyWord(null);
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+    }
 
     @Test
     void contextLoads() throws Exception {
