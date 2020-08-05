@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.thoughtworks.rslist.domain.*;
 import org.hibernate.annotations.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.*;
@@ -17,17 +18,17 @@ public class RsController {
   private Map<String, User> userList = new LinkedHashMap<>();
 
   @GetMapping("/rs/list")
-  public List<RsEvent> getRsList(@RequestParam(required = false) Integer start,
-                                 @RequestParam(required = false) Integer end) {
+  public ResponseEntity getRsList(@RequestParam(required = false) Integer start,
+                                  @RequestParam(required = false) Integer end) {
     if (start != null && end != null) {
-      return rsList.subList(start - 1, end);
+      return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
-    return rsList;
+    return ResponseEntity.ok(rsList.subList(start - 1, end));
   }
 
   @GetMapping("/rs/{index}")
-  public RsEvent getOneOfEvent(@PathVariable int index) {
-    return rsList.get(index - 1);
+  public ResponseEntity getOneOfEvent(@PathVariable int index) {
+    return ResponseEntity.ok(rsList.get(index - 1));
   }
 
 
@@ -39,32 +40,37 @@ public class RsController {
 //  }
 
   @PostMapping("/rs/addEvent")
-  public void addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
+  public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
     rsList.add(rsEvent);
 
     if (!userList.containsKey(rsEvent.getUser().getUserName())) {
       userList.put(rsEvent.getUser().getUserName(), rsEvent.getUser());
     }
+
+    String index = Integer.toString(rsList.indexOf(rsEvent));
+    return ResponseEntity.created(null).header("index", index).build();
   }
 
   @PatchMapping("/rs/amendEvent")
-  public void amendRsEvent(@RequestParam int index, @RequestBody RsEvent rsEvent) {
+  public ResponseEntity amendRsEvent(@RequestParam int index, @RequestBody RsEvent rsEvent) {
     if (rsEvent.getEventName() != null) {
       rsList.get(index - 1).setEventName(rsEvent.getEventName());
     }
     if (rsEvent.getKeyWord() != null) {
       rsList.get(index - 1).setKeyWord(rsEvent.getKeyWord());
     }
+    return ResponseEntity.ok().build();
   }
 
   @DeleteMapping("/rs/deleteEvent")
-  public void deleteRsEvent(@RequestParam int index) {
+  public ResponseEntity deleteRsEvent(@RequestParam int index) {
     rsList.remove(index - 1);
+    return ResponseEntity.ok().build();
   }
 
   @GetMapping("/rs/userList")
-  public List<User> getUserList() {
-    return new ArrayList<>(userList.values());
+  public ResponseEntity getUserList() {
+    return ResponseEntity.ok(new ArrayList<>(userList.values()));
   }
 
 }
