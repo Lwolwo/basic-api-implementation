@@ -336,6 +336,30 @@ class RsListApplicationTests {
                 .andExpect(jsonPath("$[0].keyWord", is("娱乐")))
                 .andExpect(jsonPath("$[0]", not(hasKey("user"))))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void should_get_user_list() throws Exception {
+//        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+//        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", user);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+//        String jsonString = objectMapper.writeValueAsString(rsEvent);
+
+        String jsonString = "{\"eventName\":\"添加一条热搜\",\"keyWord\":\"娱乐\",\"user\": {\"user_name\":\"xiaowang\",\"user_age\": 19,\"user_gender\": \"female\",\"user_email\": \"a@thoughtworks.com\",\"user_phone\": \"18888888888\"}}";
+
+
+        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/rs/userList"))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].user_name", is("xiaowang")))
+                .andExpect(jsonPath("$[0].user_gender", is("female")))
+                .andExpect(jsonPath("$[0].user_age", is(19)))
+                .andExpect(jsonPath("$[0].user_email", is("a@thoughtworks.com")))
+                .andExpect(jsonPath("$[0].user_phone", is("18888888888")))
+                .andExpect(status().isOk());
 
     }
 
