@@ -13,7 +13,7 @@ import java.util.stream.*;
 @RestController
 public class RsController {
   private List<RsEvent> rsList = new ArrayList<>();
-  private Map<String, User> userList = new HashMap<>();
+  private Map<String, User> userList = new LinkedHashMap<>();
 
   @GetMapping("/rs/list")
   public List<RsEvent> getRsList(@RequestParam(required = false) Integer start,
@@ -29,19 +29,20 @@ public class RsController {
     return rsList.get(index - 1);
   }
 
+
 //  @PostMapping("/rs/addEvent")
-//  public void addRsEvent(@RequestBody RsEvent rsEvent) {
-//    rsList.add(rsEvent);
+//  public void addRsEvent(@RequestBody String rsEvent) throws JsonProcessingException {
+//    ObjectMapper objectMapper = new ObjectMapper();
+//    RsEvent event = objectMapper.readValue(rsEvent, RsEvent.class);
+//    rsList.add(event);
 //  }
 
   @PostMapping("/rs/addEvent")
-  public void addRsEvent(@RequestBody String rsEvent) throws JsonProcessingException {
-    ObjectMapper objectMapper = new ObjectMapper();
-    RsEvent event = objectMapper.readValue(rsEvent, RsEvent.class);
-    rsList.add(event);
+  public void addRsEvent(@RequestBody RsEvent rsEvent) {
+    rsList.add(rsEvent);
 
-    if (!userList.containsKey(event.getUser().getUserName())) {
-      userList.put(event.getUser().getUserName(), event.getUser());
+    if (!userList.containsKey(rsEvent.getUser().getUserName())) {
+      userList.put(rsEvent.getUser().getUserName(), rsEvent.getUser());
     }
   }
 
@@ -58,6 +59,11 @@ public class RsController {
   @DeleteMapping("/rs/deleteEvent")
   public void deleteRsEvent(@RequestParam int index) {
     rsList.remove(index - 1);
+  }
+
+  @GetMapping("/rs/userList")
+  public List getUserList() {
+    return userList.entrySet().stream().collect(Collectors.toList());
   }
 
 }

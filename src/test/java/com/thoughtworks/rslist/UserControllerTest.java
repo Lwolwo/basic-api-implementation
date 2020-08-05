@@ -94,6 +94,20 @@ class UserControllerTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].eventName", is("添加一条热搜")))
                 .andExpect(jsonPath("$[0].keyWord", is("娱乐")))
+                .andExpect(jsonPath("$[0].user.userName", is("xiaowang")))
+                .andExpect(jsonPath("$[0].user.gender", is("female")))
+                .andExpect(jsonPath("$[0].user.age", is(19)))
+                .andExpect(jsonPath("$[0].user.email", is("a@thoughtworks.com")))
+                .andExpect(jsonPath("$[0].user.phone", is("18888888888")))
                 .andExpect(status().isOk());
+
+//        mockMvc.perform(get("/rs/userList"))
+//                .andExpect(jsonPath("$", hasSize(1)))
+//                .andExpect(jsonPath("$[0].userName", is("xiaowang")))
+//                .andExpect(jsonPath("$[0].gender", is("female")))
+//                .andExpect(jsonPath("$[0].age", is(19)))
+//                .andExpect(jsonPath("$[0].email", is("a@thoughtworks.com")))
+//                .andExpect(jsonPath("$[0].phone", is("18888888888")))
+//                .andExpect(status().isOk());
     }
 }

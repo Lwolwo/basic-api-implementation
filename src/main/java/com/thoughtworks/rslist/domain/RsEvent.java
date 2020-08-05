@@ -1,5 +1,7 @@
 package com.thoughtworks.rslist.domain;
 
+import javax.validation.*;
+
 public class RsEvent {
     private String eventName;
     private String keyWord;
