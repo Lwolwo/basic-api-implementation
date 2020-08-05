@@ -1,16 +1,12 @@
 package com.thoughtworks.rslist.api;
 
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.*;
 import com.thoughtworks.rslist.domain.*;
 import com.thoughtworks.rslist.exception.*;
-import org.hibernate.annotations.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.*;
 import java.util.*;
-import java.util.stream.*;
 
 
 @RestController
@@ -22,6 +18,9 @@ public class RsController {
   public ResponseEntity getRsList(@RequestParam(required = false) Integer start,
                                   @RequestParam(required = false) Integer end) {
     if (start != null && end != null) {
+      if (start < 0 || end > rsList.size() || start > end) {
+        throw new RsEventInvalidException("invalid request param");
+      }
       return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
     return ResponseEntity.ok(rsList);
@@ -30,7 +29,7 @@ public class RsController {
   @GetMapping("/rs/{index}")
   public ResponseEntity getOneOfEvent(@PathVariable int index) {
     if (index < 1 || index > rsList.size()) {
-      throw new RsEventIndexInvalidException("invalid index");
+      throw new RsEventInvalidException("invalid index");
     }
     return ResponseEntity.ok(rsList.get(index - 1));
   }

@@ -378,6 +378,21 @@ class RsListApplicationTests {
     }
 
     @Test
+    public void should_verify_start_and_end_in_get_rs_list() throws Exception {
+        mockMvc.perform(get("/rs/list?start=0&end=1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+
+        mockMvc.perform(get("/rs/list?start=0&end=1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+
+        mockMvc.perform(get("/rs/list?start=1&end=2"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
+    @Test
     void contextLoads() throws Exception {
 
     }

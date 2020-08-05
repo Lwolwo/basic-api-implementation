@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 @ControllerAdvice
 public class RsEventExceptionHandler {
-    @ExceptionHandler({RsEventIndexInvalidException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({RsEventInvalidException.class, MethodArgumentNotValidException.class})
     public ResponseEntity RsEventExceptionHandler(Exception e) {
         String errorMessage;
-        if (e instanceof RsEventIndexInvalidException) {
+        if (e instanceof RsEventInvalidException) {
             errorMessage = e.getMessage();
         } else {
             errorMessage = "invalid param";

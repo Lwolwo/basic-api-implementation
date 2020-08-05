@@ -1,8 +1,8 @@
 package com.thoughtworks.rslist.exception;
 
-public class RsEventIndexInvalidException extends RuntimeException {
+public class RsEventInvalidException extends RuntimeException {
     private String errorMessage;
-    public RsEventIndexInvalidException(String errorMessage) {
+    public RsEventInvalidException(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
