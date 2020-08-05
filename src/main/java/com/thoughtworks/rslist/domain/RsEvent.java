@@ -5,6 +5,7 @@ import javax.validation.*;
 public class RsEvent {
     private String eventName;
     private String keyWord;
+    @Valid
     private User user;
 
     public RsEvent() {

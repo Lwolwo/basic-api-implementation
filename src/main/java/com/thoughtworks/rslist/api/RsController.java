@@ -6,6 +6,7 @@ import com.thoughtworks.rslist.domain.*;
 import org.hibernate.annotations.*;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -38,7 +39,7 @@ public class RsController {
 //  }
 
   @PostMapping("/rs/addEvent")
-  public void addRsEvent(@RequestBody RsEvent rsEvent) {
+  public void addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
     rsList.add(rsEvent);
 
     if (!userList.containsKey(rsEvent.getUser().getUserName())) {
@@ -62,8 +63,8 @@ public class RsController {
   }
 
   @GetMapping("/rs/userList")
-  public List getUserList() {
-    return userList.entrySet().stream().collect(Collectors.toList());
+  public List<User> getUserList() {
+    return new ArrayList<>(userList.values());
   }
 
 }
