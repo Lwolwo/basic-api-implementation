@@ -2,6 +2,8 @@ package com.thoughtworks.rslist;
 
 import com.fasterxml.jackson.databind.*;
 import com.thoughtworks.rslist.domain.*;
+import com.thoughtworks.rslist.dto.*;
+import com.thoughtworks.rslist.repository.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.*;
@@ -9,8 +11,11 @@ import org.springframework.boot.test.context.*;
 import org.springframework.http.*;
 import org.springframework.test.web.servlet.*;
 
+import java.util.*;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -19,6 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Test
     public void should_register_new_user() throws Exception {
@@ -90,4 +98,22 @@ class UserControllerTest {
 
     }
 
+    @Test
+    public void should_register_new_user_into_database() throws Exception {
+        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+        String jsonString = objectMapper.writeValueAsString(user);
+
+        mockMvc.perform(post("/user").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        List<UserDto> userDtoList = userRepository.findAll();
+        assertEquals(1, userDtoList.size());
+        assertEquals("xiaowang", userDtoList.get(0).getUserName());
+        assertEquals("female", userDtoList.get(0).getGender());
+        assertEquals(19, userDtoList.get(0).getAge());
+        assertEquals("a@thoughtworks.com", userDtoList.get(0).getEmail());
+        assertEquals("18888888888", userDtoList.get(0).getPhone());
+
+    }
 }

@@ -1,6 +1,9 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.*;
+import com.thoughtworks.rslist.dto.*;
+import com.thoughtworks.rslist.repository.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.*;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +15,20 @@ import java.util.*;
 
 @RestController
 public class UserController {
-    private List<User> userList = new ArrayList<>();
+    @Autowired
+    UserRepository userRepository;
 
     @PostMapping("/user")
     public ResponseEntity registerUser(@RequestBody @Valid User user) {
-        userList.add(user);
-        String index = Integer.toString(userList.indexOf(user));
-        return ResponseEntity.created(null).header("index", index).build();
+        UserDto userDto = UserDto.builder()
+                .userName(user.getUserName())
+                .gender(user.getGender())
+                .age(user.getAge())
+                .email(user.getEmail())
+                .phone(user.getPhone()).build();
+
+        userRepository.save(userDto);
+        return ResponseEntity.ok(null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
