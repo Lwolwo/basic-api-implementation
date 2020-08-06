@@ -26,17 +26,31 @@ class UserControllerTest {
     MockMvc mockMvc;
 
     @Autowired
+    RsEventRepository rsEventRepository;
+    RsEventDto rsEventDto;
+
+    @Autowired
     UserRepository userRepository;
     UserDto userDto;
 
+
     @BeforeEach
     public void setup() {
+        rsEventRepository.deleteAll();
+        userRepository.deleteAll();
+
         userDto = UserDto.builder()
                 .userName("xiaowang")
                 .gender("female")
                 .age(19)
                 .email("a@thoughtworks.com")
                 .phone("18888888888")
+                .build();
+
+        rsEventDto = RsEventDto.builder()
+                .eventName("猪肉涨价了")
+                .keyWord("经济")
+                .userId(userDto.getId())
                 .build();
     }
 
@@ -150,5 +164,20 @@ class UserControllerTest {
 
         List<UserDto> userDtoList = userRepository.findAll();
         assertEquals(0, userDtoList.size());
+    }
+
+    @Test
+    public void delete_user_should_delete_its_rs_event() throws Exception {
+        userRepository.save(userDto);
+        rsEventRepository.save(rsEventDto);
+
+        mockMvc.perform(delete("/user/delete")
+                .param("id", String.valueOf(userDto.getId())))
+                .andExpect(status().isOk());
+
+        List<UserDto> userDtoList = userRepository.findAll();
+        List<RsEventDto> rsEventDtoList = rsEventRepository.findAll();
+        assertEquals(0, userDtoList.size());
+        assertEquals(0, rsEventDtoList.size());
     }
 }

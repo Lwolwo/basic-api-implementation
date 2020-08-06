@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.dto;
 
+import com.thoughtworks.rslist.domain.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,4 +18,7 @@ public class RsEventDto {
     private String eventName;
     private String keyWord;
     private int userId;
+
+    @ManyToOne
+    private UserDto userDto;
 }

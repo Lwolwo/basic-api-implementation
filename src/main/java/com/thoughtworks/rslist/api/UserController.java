@@ -20,6 +20,8 @@ import java.util.*;
 public class UserController {
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    RsEventRepository rsEventRepository;
 
     @PostMapping("/user")
     public ResponseEntity registerUser(@RequestBody @Valid User user) {
@@ -42,7 +44,7 @@ public class UserController {
     @DeleteMapping("/user/delete")
     public ResponseEntity deleteUserById(@RequestParam int id) {
         userRepository.deleteById(id);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
