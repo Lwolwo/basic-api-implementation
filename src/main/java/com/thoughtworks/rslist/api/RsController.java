@@ -18,7 +18,7 @@ public class RsController {
   public ResponseEntity getRsList(@RequestParam(required = false) Integer start,
                                   @RequestParam(required = false) Integer end) {
     if (start != null && end != null) {
-      if (start < 0 || end > rsList.size() || start > end) {
+      if (start <= 0 || end > rsList.size() || start > end) {
         throw new RsEventInvalidException("invalid request param");
       }
       return ResponseEntity.ok(rsList.subList(start - 1, end));
