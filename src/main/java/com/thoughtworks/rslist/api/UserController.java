@@ -3,7 +3,9 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.domain.*;
 import com.thoughtworks.rslist.dto.*;
 import com.thoughtworks.rslist.repository.*;
+import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.data.repository.query.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.*;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,12 @@ public class UserController {
     @GetMapping("/user/{id}")
     public ResponseEntity getUserById(@PathVariable int id) {
         return ResponseEntity.ok(userRepository.findById(id).get());
+    }
+
+    @DeleteMapping("/user/delete")
+    public ResponseEntity deleteUserById(@RequestParam int id) {
+        userRepository.deleteById(id);
+        return ResponseEntity.ok(null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

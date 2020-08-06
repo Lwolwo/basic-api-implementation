@@ -140,4 +140,15 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.phone", is("18888888888")))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void should_delete_user_by_id() throws Exception {
+        userRepository.save(userDto);
+        mockMvc.perform(delete("/user/delete")
+                .param("id", "1"))
+                .andExpect(status().isOk());
+
+        List<UserDto> userDtoList = userRepository.findAll();
+        assertEquals(0, userDtoList.size());
+    }
 }
