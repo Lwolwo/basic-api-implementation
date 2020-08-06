@@ -15,6 +15,13 @@ public class RsEvent {
     private String keyWord;
     @NotNull
     private int userId;
+    private int voteNum = 0;
+
+    public RsEvent(String eventName, String keyWord, @NotNull int userId) {
+        this.eventName = eventName;
+        this.keyWord = keyWord;
+        this.userId = userId;
+    }
 
     public RsEvent(String eventName, String keyWord) {
         this.eventName = eventName;

@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.domain;
 
-import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 import javax.validation.constraints.*;
@@ -28,7 +27,7 @@ public class User {
     @Pattern(regexp = "1\\d{10}")
 //    @JsonProperty(value ="user_phone")
     private String phone;
-    private int voteNumber = 10;
+    private int voteNum = 10;
 
 
     public User(String userName, String gender, int age, String email, String phone) {
@@ -79,11 +78,11 @@ public class User {
         this.phone = phone;
     }
 
-    public int getVoteNumber() {
-        return voteNumber;
+    public int getVoteNum() {
+        return voteNum;
     }
 
-    public void setVoteNumber(int voteNumber) {
-        this.voteNumber = voteNumber;
+    public void setVoteNum(int voteNum) {
+        this.voteNum = voteNum;
     }
 }

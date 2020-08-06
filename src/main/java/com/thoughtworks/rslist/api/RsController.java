@@ -18,6 +18,8 @@ public class RsController {
   RsEventRepository rsEventRepository;
   @Autowired
   UserRepository userRepository;
+  @Autowired
+  VoteRepository voteRepository;
 
   @GetMapping("/rs/list")
   public ResponseEntity getRsList(@RequestParam(required = false) Integer start,
@@ -83,6 +85,27 @@ public class RsController {
   @GetMapping("/rs/userList")
   public ResponseEntity getUserList() {
     return ResponseEntity.ok(userRepository.findAll());
+  }
+
+  @PostMapping("/rs/vote/{rsEventId}")
+  public ResponseEntity voteRsEvent(@PathVariable int rsEventId, @RequestBody Vote vote) {
+    UserDto userDto = userRepository.findById(vote.getUserId()).get();
+    RsEventDto rsEventDto = rsEventRepository.findById(rsEventId).get();
+    if (userDto.getVoteNum() >= vote.getVoteNum()) {
+      VoteDto voteDto = VoteDto.builder()
+              .voteNum(vote.getVoteNum())
+              .rsEventId(rsEventId)
+              .userId(vote.getUserId())
+              .time(vote.getTime())
+              .build();
+      userDto.setVoteNum(userDto.getVoteNum() - vote.getVoteNum());
+      rsEventDto.setVoteNum(vote.getVoteNum());
+      userRepository.save(userDto);
+      rsEventRepository.save(rsEventDto);
+      voteRepository.save(voteDto);
+      return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.badRequest().build();
   }
 
 }

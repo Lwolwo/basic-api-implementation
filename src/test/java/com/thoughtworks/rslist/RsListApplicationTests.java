@@ -3,8 +3,10 @@ package com.thoughtworks.rslist;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.thoughtworks.rslist.domain.*;
+import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.dto.*;
 import com.thoughtworks.rslist.repository.*;
+import org.apache.tomcat.jni.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.mockito.internal.matchers.Null;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.*;
 
+import java.time.*;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;
@@ -39,6 +42,9 @@ class RsListApplicationTests {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    VoteRepository voteRepository;
+
     RsEventDto rsEventDto;
     UserDto userDto;
 
@@ -46,6 +52,7 @@ class RsListApplicationTests {
     public void setup() {
         userRepository.deleteAll();
         rsEventRepository.deleteAll();
+        voteRepository.deleteAll();
 
         userDto = UserDto.builder()
                 .userName("xiaowang")
@@ -53,6 +60,7 @@ class RsListApplicationTests {
                 .age(19)
                 .email("a@thoughtworks.com")
                 .phone("18888888888")
+                .voteNum(10)
                 .build();
 
         userRepository.save(userDto);
@@ -475,6 +483,32 @@ class RsListApplicationTests {
         rsEventDtoTemp = rsEventRepository.findById(rsEventDto.getId()).get();
         assertEquals(rsEventDtoTemp.getEventName(), "猪肉涨价了");
         assertEquals(rsEventDtoTemp.getKeyWord(), "经济");
+
+    }
+
+    @Test
+    public void should_vote_rs_event() throws Exception {
+        Vote vote = Vote.builder().voteNum(12).userId(userDto.getId()).time("current time").build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+        String jsonString = objectMapper.writeValueAsString(vote);
+
+        mockMvc.perform(post("/rs/vote/" + rsEventDto.getId())
+                .content(jsonString)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+
+        vote.setVoteNum(5);
+        jsonString = objectMapper.writeValueAsString(vote);
+        mockMvc.perform(post("/rs/vote/" + rsEventDto.getId())
+                .content(jsonString)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        assertEquals(1, voteRepository.findAll().size());
+        assertEquals(5, userRepository.findAll().get(0).getVoteNum());
+        assertEquals(5, rsEventRepository.findAll().get(0).getVoteNum());
 
     }
 
