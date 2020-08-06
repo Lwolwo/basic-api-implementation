@@ -27,6 +27,18 @@ class UserControllerTest {
 
     @Autowired
     UserRepository userRepository;
+    UserDto userDto;
+
+    @BeforeEach
+    public void setup() {
+        userDto = UserDto.builder()
+                .userName("xiaowang")
+                .gender("female")
+                .age(19)
+                .email("a@thoughtworks.com")
+                .phone("18888888888")
+                .build();
+    }
 
     @Test
     public void should_register_new_user() throws Exception {
@@ -115,5 +127,17 @@ class UserControllerTest {
         assertEquals("a@thoughtworks.com", userDtoList.get(0).getEmail());
         assertEquals("18888888888", userDtoList.get(0).getPhone());
 
+    }
+
+    @Test
+    public void should_get_user_info_by_id() throws Exception {
+        userRepository.save(userDto);
+        mockMvc.perform(get("/user/1"))
+                .andExpect(jsonPath("$.userName", is("xiaowang")))
+                .andExpect(jsonPath("$.gender", is("female")))
+                .andExpect(jsonPath("$.age", is(19)))
+                .andExpect(jsonPath("$.email", is("a@thoughtworks.com")))
+                .andExpect(jsonPath("$.phone", is("18888888888")))
+                .andExpect(status().isOk());
     }
 }

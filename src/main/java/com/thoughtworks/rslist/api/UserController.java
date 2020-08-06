@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.thoughtworks.rslist.exception.Error;
 
 import javax.validation.*;
+import javax.validation.constraints.*;
 import java.util.*;
 
 @RestController
@@ -29,6 +30,11 @@ public class UserController {
 
         userRepository.save(userDto);
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity getUserById(@PathVariable int id) {
+        return ResponseEntity.ok(userRepository.findById(id).get());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

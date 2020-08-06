@@ -1,9 +1,13 @@
 package com.thoughtworks.rslist.domain;
 
 import com.fasterxml.jackson.annotation.*;
+import lombok.*;
 
 import javax.validation.constraints.*;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @NotNull
     @Size(max = 8)
@@ -26,8 +30,6 @@ public class User {
     private String phone;
     private int voteNumber = 10;
 
-    public User() {
-    }
 
     public User(String userName, String gender, int age, String email, String phone) {
         this.userName = userName;
