@@ -50,7 +50,7 @@ class UserControllerTest {
         rsEventDto = RsEventDto.builder()
                 .eventName("猪肉涨价了")
                 .keyWord("经济")
-                .userId(userDto.getId())
+                .userId(1)
                 .build();
     }
 
@@ -180,4 +180,5 @@ class UserControllerTest {
         assertEquals(0, userDtoList.size());
         assertEquals(0, rsEventDtoList.size());
     }
+
 }

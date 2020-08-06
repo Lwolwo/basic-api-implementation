@@ -55,18 +55,24 @@ public class RsController {
     return ResponseEntity.created(null).build();
   }
 
-/*
-  @PatchMapping("/rs/amendEvent")
-  public ResponseEntity amendRsEvent(@RequestParam int index, @RequestBody RsEvent rsEvent) {
-    if (rsEvent.getEventName() != null) {
-      rsList.get(index - 1).setEventName(rsEvent.getEventName());
+
+  @PatchMapping("/rs/update/{rsEventId}")
+  public ResponseEntity updateEvent(@PathVariable int rsEventId, @RequestBody @Valid RsEvent rsEvent) {
+    RsEventDto rsEventDto = rsEventRepository.findById(rsEventId).get();
+    if (rsEventDto.getUserId() != rsEvent.getUserId()) {
+      return ResponseEntity.badRequest().build();
     }
     if (rsEvent.getKeyWord() != null) {
-      rsList.get(index - 1).setKeyWord(rsEvent.getKeyWord());
+      rsEventDto.setKeyWord(rsEvent.getKeyWord());
     }
+    if (rsEvent.getEventName() != null) {
+      rsEventDto.setEventName(rsEvent.getEventName());
+    }
+
+    rsEventRepository.save(rsEventDto);
     return ResponseEntity.ok().build();
   }
-  **/
+
 
   @DeleteMapping("/rs/deleteEvent")
   public ResponseEntity deleteRsEvent(@RequestParam int id) {

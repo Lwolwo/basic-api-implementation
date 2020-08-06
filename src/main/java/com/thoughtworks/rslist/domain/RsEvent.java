@@ -11,9 +11,7 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RsEvent {
-    @NotNull
     private String eventName;
-    @NotNull
     private String keyWord;
     @NotNull
     private int userId;
@@ -21,5 +19,15 @@ public class RsEvent {
     public RsEvent(String eventName, String keyWord) {
         this.eventName = eventName;
         this.keyWord = keyWord;
+    }
+
+    public RsEvent(String eventName, @NotNull int userId) {
+        this.eventName = eventName;
+        this.userId = userId;
+    }
+
+    public RsEvent(@NotNull int userId, String keyWord) {
+        this.keyWord = keyWord;
+        this.userId = userId;
     }
 }

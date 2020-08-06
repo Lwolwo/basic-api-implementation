@@ -36,11 +36,17 @@ class RsListApplicationTests {
     @Autowired
     RsEventRepository rsEventRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     RsEventDto rsEventDto;
     UserDto userDto;
 
     @BeforeEach
     public void setup() {
+        userRepository.deleteAll();
+        rsEventRepository.deleteAll();
+
         userDto = UserDto.builder()
                 .userName("xiaowang")
                 .gender("female")
@@ -49,11 +55,15 @@ class RsListApplicationTests {
                 .phone("18888888888")
                 .build();
 
+        userRepository.save(userDto);
+
         rsEventDto = RsEventDto.builder()
                 .eventName("猪肉涨价了")
                 .keyWord("经济")
                 .userId(userDto.getId())
                 .build();
+
+        rsEventRepository.save(rsEventDto);
     }
 
     @Test
@@ -426,6 +436,46 @@ class RsListApplicationTests {
                 .content(jsonString)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void should_update_rs_event() throws Exception {
+        String jsonString = "{\"eventName\":\"添加一条热搜\",\"keyWord\":\"娱乐\",\"userId\": 666}";
+        mockMvc.perform(patch("/rs/update/" + rsEventDto.getId())
+                .content(jsonString)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        jsonString = "{\"eventName\":\"添加一条热搜\",\"userId\": "+ rsEventDto.getUserId() + "}";
+        mockMvc.perform(patch("/rs/update/" + rsEventDto.getId())
+                .content(jsonString)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        RsEventDto rsEventDtoTemp = rsEventRepository.findById(rsEventDto.getId()).get();
+        assertEquals(rsEventDtoTemp.getEventName(), "添加一条热搜");
+        assertEquals(rsEventDtoTemp.getKeyWord(), "经济");
+
+        jsonString = "{\"keyWord\":\"其它\",\"userId\": "+ rsEventDto.getUserId() + "}";
+        mockMvc.perform(patch("/rs/update/" + rsEventDto.getId())
+                .content(jsonString)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        rsEventDtoTemp = rsEventRepository.findById(rsEventDto.getId()).get();
+        assertEquals(rsEventDtoTemp.getEventName(), "添加一条热搜");
+        assertEquals(rsEventDtoTemp.getKeyWord(), "其它");
+
+        jsonString = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\": "+ rsEventDto.getUserId() + "}";
+        mockMvc.perform(patch("/rs/update/" + rsEventDto.getId())
+                .content(jsonString)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        rsEventDtoTemp = rsEventRepository.findById(rsEventDto.getId()).get();
+        assertEquals(rsEventDtoTemp.getEventName(), "猪肉涨价了");
+        assertEquals(rsEventDtoTemp.getKeyWord(), "经济");
+
     }
 
     @Test

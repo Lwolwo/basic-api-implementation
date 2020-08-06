@@ -4,6 +4,7 @@ import com.thoughtworks.rslist.domain.*;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 
 @Entity
 @Builder
