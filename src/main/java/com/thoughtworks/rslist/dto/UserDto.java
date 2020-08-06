@@ -9,7 +9,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-
 @Table(name = "user")
 public class UserDto {
     @Id

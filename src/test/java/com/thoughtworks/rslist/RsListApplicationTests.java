@@ -3,6 +3,8 @@ package com.thoughtworks.rslist;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.thoughtworks.rslist.domain.*;
+import com.thoughtworks.rslist.dto.*;
+import com.thoughtworks.rslist.repository.*;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.mockito.internal.matchers.Null;
@@ -16,8 +18,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.*;
 
+import java.util.*;
+
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -28,6 +32,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RsListApplicationTests {
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    RsEventRepository rsEventRepository;
+
+    RsEventDto rsEventDto;
+    UserDto userDto;
+
+    @BeforeEach
+    public void setup() {
+        userDto = UserDto.builder()
+                .userName("xiaowang")
+                .gender("female")
+                .age(19)
+                .email("a@thoughtworks.com")
+                .phone("18888888888")
+                .build();
+
+        rsEventDto = RsEventDto.builder()
+                .eventName("猪肉涨价了")
+                .keyWord("经济")
+                .userId(userDto.getId())
+                .build();
+    }
 
     @Test
     @Order(1)
@@ -198,7 +225,7 @@ class RsListApplicationTests {
     @Test
     public void should_add_rs_event_with_user() throws Exception {
         User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", user);
+        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", 1);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
         String jsonString = objectMapper.writeValueAsString(rsEvent);
@@ -230,7 +257,7 @@ class RsListApplicationTests {
     @Test
     public void user_keyWord_eventName_should_not_be_null() throws Exception {
         User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", null);
+        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", 1);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
@@ -238,7 +265,7 @@ class RsListApplicationTests {
         mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
-        rsEvent.setUser(user);
+//        rsEvent.setUser(user);
         rsEvent.setEventName(null);
         mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -252,7 +279,7 @@ class RsListApplicationTests {
     @Test
     public void user_property_should_suit_rules() throws Exception {
         User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", user);
+        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", 1);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
@@ -305,7 +332,7 @@ class RsListApplicationTests {
     @Test
     public void post_method_should_return_201_with_header() throws Exception {
         User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", user);
+        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", 1);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
@@ -320,7 +347,7 @@ class RsListApplicationTests {
     @Test
     public void list_should_not_contain_user_property() throws Exception {
         User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", user);
+        RsEvent rsEvent = new RsEvent("添加一条热搜", "娱乐", 1);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
         String jsonString = objectMapper.writeValueAsString(rsEvent);
@@ -393,8 +420,16 @@ class RsListApplicationTests {
     }
 
     @Test
-    void contextLoads() throws Exception {
+    public void should_add_rs_event_and_user_registered() throws Exception {
+        String jsonString = "{\"eventName\":\"添加一条热搜\",\"keyWord\":\"娱乐\",\"userId\": 666}";
+        mockMvc.perform(post("/rs/addEvent")
+                .content(jsonString)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 
+    @Test
+    void contextLoads() throws Exception {
     }
 
 }

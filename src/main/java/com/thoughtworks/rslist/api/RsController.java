@@ -1,7 +1,10 @@
 package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.domain.*;
+import com.thoughtworks.rslist.dto.*;
 import com.thoughtworks.rslist.exception.*;
+import com.thoughtworks.rslist.repository.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,49 +14,48 @@ import java.util.*;
 
 @RestController
 public class RsController {
-  private List<RsEvent> rsList = new ArrayList<>();
-  private Map<String, User> userList = new LinkedHashMap<>();
+  @Autowired
+  RsEventRepository rsEventRepository;
+  @Autowired
+  UserRepository userRepository;
 
   @GetMapping("/rs/list")
   public ResponseEntity getRsList(@RequestParam(required = false) Integer start,
                                   @RequestParam(required = false) Integer end) {
     if (start != null && end != null) {
-      if (start <= 0 || end > rsList.size() || start > end) {
+      if (start <= 0 || end > rsEventRepository.findAll().size() || start > end) {
         throw new RsEventInvalidException("invalid request param");
       }
-      return ResponseEntity.ok(rsList.subList(start - 1, end));
+      return ResponseEntity.ok(rsEventRepository.findAll().subList(start - 1, end));
     }
-    return ResponseEntity.ok(rsList);
+    return ResponseEntity.ok(rsEventRepository.findAll());
   }
 
-  @GetMapping("/rs/{index}")
-  public ResponseEntity getOneOfEvent(@PathVariable int index) {
-    if (index < 1 || index > rsList.size()) {
+  @GetMapping("/rs/{id}")
+  public ResponseEntity getOneOfEvent(@PathVariable int id) {
+    if (id < 1 || id > rsEventRepository.findAll().size()) {
       throw new RsEventInvalidException("invalid index");
     }
-    return ResponseEntity.ok(rsList.get(index - 1));
+    return ResponseEntity.ok(rsEventRepository.findById(id));
   }
 
-
-//  @PostMapping("/rs/addEvent")
-//  public void addRsEvent(@RequestBody String rsEvent) throws JsonProcessingException {
-//    ObjectMapper objectMapper = new ObjectMapper();
-//    RsEvent event = objectMapper.readValue(rsEvent, RsEvent.class);
-//    rsList.add(event);
-//  }
 
   @PostMapping("/rs/addEvent")
   public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
-    rsList.add(rsEvent);
-
-    if (!userList.containsKey(rsEvent.getUser().getUserName())) {
-      userList.put(rsEvent.getUser().getUserName(), rsEvent.getUser());
+    if (!userRepository.findById(rsEvent.getUserId()).isPresent()) {
+      return ResponseEntity.badRequest().build();
     }
+    RsEventDto rsEventDto = RsEventDto.builder()
+            .keyWord(rsEvent.getKeyWord())
+            .eventName(rsEvent.getEventName())
+            .userId(rsEvent.getUserId())
+            .build();
+    rsEventRepository.save(rsEventDto);
 
-    String index = Integer.toString(rsList.indexOf(rsEvent));
-    return ResponseEntity.created(null).header("index", index).build();
+    return ResponseEntity.created(null).build();
   }
 
+/*
   @PatchMapping("/rs/amendEvent")
   public ResponseEntity amendRsEvent(@RequestParam int index, @RequestBody RsEvent rsEvent) {
     if (rsEvent.getEventName() != null) {
@@ -64,16 +66,17 @@ public class RsController {
     }
     return ResponseEntity.ok().build();
   }
+  **/
 
   @DeleteMapping("/rs/deleteEvent")
-  public ResponseEntity deleteRsEvent(@RequestParam int index) {
-    rsList.remove(index - 1);
+  public ResponseEntity deleteRsEvent(@RequestParam int id) {
+    rsEventRepository.deleteById(id);
     return ResponseEntity.ok().build();
   }
 
   @GetMapping("/rs/userList")
   public ResponseEntity getUserList() {
-    return ResponseEntity.ok(new ArrayList<>(userList.values()));
+    return ResponseEntity.ok(userRepository.findAll());
   }
 
 }
