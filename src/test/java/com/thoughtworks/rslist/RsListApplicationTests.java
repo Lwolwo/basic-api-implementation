@@ -513,6 +513,27 @@ class RsListApplicationTests {
     }
 
     @Test
+    public void rs_event_should_return_its_voteNum() throws Exception {
+        Vote vote = Vote.builder().voteNum(2).userId(userDto.getId()).time("current time").build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
+        String jsonString = objectMapper.writeValueAsString(vote);
+
+        mockMvc.perform(post("/rs/vote/" + rsEventDto.getId())
+                .content(jsonString)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/rs/" + rsEventDto.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.eventName", is(rsEventDto.getEventName())))
+                .andExpect(jsonPath("$.keyWord", is(rsEventDto.getKeyWord())))
+                .andExpect(jsonPath("$.id", is(rsEventDto.getId())))
+                .andExpect(jsonPath("$.voteNum", is(2)))
+                .andExpect(jsonPath("$", not(hasKey("userId"))));
+    }
+
+    @Test
     void contextLoads() throws Exception {
     }
 

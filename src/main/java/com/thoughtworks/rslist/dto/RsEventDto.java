@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.dto;
 
+import com.fasterxml.jackson.annotation.*;
 import com.thoughtworks.rslist.domain.*;
 import lombok.*;
 
@@ -23,4 +24,14 @@ public class RsEventDto {
 
     @ManyToOne
     private UserDto userDto;
+
+    @JsonIgnore
+    public int getUserId() {
+        return userId;
+    }
+
+    @JsonProperty
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 }

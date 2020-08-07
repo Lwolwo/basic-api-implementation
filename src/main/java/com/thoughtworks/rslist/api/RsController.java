@@ -35,10 +35,10 @@ public class RsController {
 
   @GetMapping("/rs/{id}")
   public ResponseEntity getOneOfEvent(@PathVariable int id) {
-    if (id < 1 || id > rsEventRepository.findAll().size()) {
+    if (id < 1) {
       throw new RsEventInvalidException("invalid index");
     }
-    return ResponseEntity.ok(rsEventRepository.findById(id));
+    return ResponseEntity.ok(rsEventRepository.findById(id).get());
   }
 
 
