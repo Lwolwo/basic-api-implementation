@@ -94,8 +94,8 @@ public class RsController {
     if (userDto.getVoteNum() >= vote.getVoteNum()) {
       VoteDto voteDto = VoteDto.builder()
               .voteNum(vote.getVoteNum())
-              .rsEventId(rsEventId)
-              .userId(vote.getUserId())
+              .rsEvent(rsEventDto)
+              .user(userDto)
               .time(vote.getTime())
               .build();
       userDto.setVoteNum(userDto.getVoteNum() - vote.getVoteNum());

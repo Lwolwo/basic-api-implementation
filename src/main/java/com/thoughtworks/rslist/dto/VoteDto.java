@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.dto;
 
+import com.thoughtworks.rslist.domain.*;
 import lombok.*;
 
 import javax.persistence.*;
@@ -15,8 +16,11 @@ public class VoteDto {
     @Id
     @GeneratedValue
     private int id;
-    private int userId;
-    private int rsEventId;
     private LocalDateTime time;
     private int voteNum;
+
+    @ManyToOne @JoinColumn(name = "user_id")
+    private UserDto user;
+    @ManyToOne @JoinColumn(name = "rs_event_id")
+    private RsEventDto rsEvent;
 }
