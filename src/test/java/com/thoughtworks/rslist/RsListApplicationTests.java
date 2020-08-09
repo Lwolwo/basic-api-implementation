@@ -488,10 +488,9 @@ class RsListApplicationTests {
 
     @Test
     public void should_vote_rs_event() throws Exception {
-        Vote vote = Vote.builder().voteNum(12).userId(userDto.getId()).time("current time").build();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
-        String jsonString = objectMapper.writeValueAsString(vote);
+        String jsonString = String.format(
+                        "{\"userId\":%d,\"time\":\"%s\",\"voteNum\":12}",
+                        userDto.getId(), LocalDateTime.now().toString());
 
         mockMvc.perform(post("/rs/vote/" + rsEventDto.getId())
                 .content(jsonString)
@@ -499,8 +498,9 @@ class RsListApplicationTests {
                 .andExpect(status().isBadRequest());
 
 
-        vote.setVoteNum(5);
-        jsonString = objectMapper.writeValueAsString(vote);
+        jsonString = String.format(
+                        "{\"userId\":%d,\"time\":\"%s\",\"voteNum\":5}",
+                        userDto.getId(), LocalDateTime.now().toString());
         mockMvc.perform(post("/rs/vote/" + rsEventDto.getId())
                 .content(jsonString)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -514,10 +514,10 @@ class RsListApplicationTests {
 
     @Test
     public void rs_event_should_return_its_voteNum() throws Exception {
-        Vote vote = Vote.builder().voteNum(2).userId(userDto.getId()).time("current time").build();
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
-        String jsonString = objectMapper.writeValueAsString(vote);
+        String jsonString =
+                String.format(
+                        "{\"userId\":%d,\"time\":\"%s\",\"voteNum\":2}",
+                        userDto.getId(), LocalDateTime.now().toString());
 
         mockMvc.perform(post("/rs/vote/" + rsEventDto.getId())
                 .content(jsonString)

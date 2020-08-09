@@ -11,12 +11,6 @@ import java.time.*;
 public class Vote {
     private int userId;
     private int rsEventId;
-    private String time;
+    private LocalDateTime time;
     private int voteNum;
-
-    public Vote(int userId, String time, int voteNum) {
-        this.userId = userId;
-        this.time = time;
-        this.voteNum = voteNum;
-    }
 }

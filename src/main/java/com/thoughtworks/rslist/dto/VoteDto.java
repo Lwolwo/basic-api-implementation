@@ -17,7 +17,6 @@ public class VoteDto {
     private int id;
     private int userId;
     private int rsEventId;
-//    private LocalDateTime time;
-    private String time;
+    private LocalDateTime time;
     private int voteNum;
 }
