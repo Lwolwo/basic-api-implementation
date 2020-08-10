@@ -33,15 +33,10 @@ public class VoteController {
 
     @GetMapping("/voteRecordTime")
     public ResponseEntity getVoteRecordBetweenGivenTime(@RequestParam String startTimeString, @RequestParam String endTimeString) {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime startTime = LocalDateTime.parse(startTimeString, df);
-        LocalDateTime endTime = LocalDateTime.parse(endTimeString, df);
-        List<VoteDto> voteDtos = voteRepository.findAll();
+        LocalDateTime startTime = LocalDateTime.parse(startTimeString);
+        LocalDateTime endTime = LocalDateTime.parse(endTimeString);
+        List<VoteDto> voteDtos = voteRepository.findAll(startTime, endTime);
 
-        return ResponseEntity.ok(
-                voteDtos.stream().filter(
-                        item -> startTime.isBefore(item.getTime()) && endTime.isAfter(item.getTime())
-                ).collect(Collectors.toList())
-        );
+        return ResponseEntity.ok(voteDtos);
     }
 }

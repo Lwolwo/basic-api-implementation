@@ -136,16 +136,12 @@ class VoteControllerTest {
                     .build();
             voteRepository.save(voteDto);
         }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startTime = LocalDateTime.of(2020, 8 , 1, 19, 59, 59);
         LocalDateTime endTime = LocalDateTime.of(2020, 8 , 5, 20, 00, 01);
-        String startTimeString = startTime.format(formatter);
-        String endTimeString = endTime.format(formatter);
 
         mockMvc.perform(get("/voteRecordTime")
-                .param("startTimeString", startTimeString)
-                .param("endTimeString", endTimeString))
+                .param("startTimeString", startTime.toString())
+                .param("endTimeString", endTime.toString()))
                 .andExpect(jsonPath("$", hasSize(5)))
                 .andExpect(jsonPath("$[0].voteNum", is(1)))
                 .andExpect(jsonPath("$[1].voteNum", is(2)))
