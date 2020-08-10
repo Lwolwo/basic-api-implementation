@@ -149,7 +149,7 @@ class RsListApplicationTests {
         String jsonString = objectMapper.writeValueAsString(rsEvent);
 
         mockMvc.perform(
-                post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON)
+                post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isCreated());
 
         mockMvc.perform(get("/rs/2"))
@@ -211,7 +211,7 @@ class RsListApplicationTests {
     @Order(5) // 全部一起运行时，删除了添加的热搜。单独运行时，需测试删除第三条热搜，并且测试结果为第三条热搜被删除
     void should_delete_rs_event() throws Exception {
         // 全部运行
-        mockMvc.perform(delete("/rs/deleteEvent")
+        mockMvc.perform(delete("/rs/event")
                 .param("index", "4")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -228,7 +228,7 @@ class RsListApplicationTests {
 
         // 单独运行
 
-        mockMvc.perform(post("/rs/deleteEvent")
+        mockMvc.perform(post("/rs/event")
                 .param("index", "3")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -251,7 +251,7 @@ class RsListApplicationTests {
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
         String jsonString = objectMapper.writeValueAsString(rsEvent);
 
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/rs/list"))
@@ -283,17 +283,17 @@ class RsListApplicationTests {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
         String jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
 //        rsEvent.setUser(user);
         rsEvent.setEventName(null);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         rsEvent.setEventName("添加一条热搜");
         rsEvent.setKeyWord(null);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -307,46 +307,46 @@ class RsListApplicationTests {
 
         user.setUserName(null);
         String jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         user.setUserName("xiaowang1");
         jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         user.setUserName("xiaowang");
         user.setGender(null);
         jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         user.setGender("female");
         user.setAge(101);
         jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         user.setAge(17);
         jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         user.setAge(20);
         user.setEmail("a.com");
         jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         user.setEmail("a@thoughtworks.com");
         user.setPhone(null);
         jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         user.setPhone("123");
         jsonString = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
@@ -359,7 +359,7 @@ class RsListApplicationTests {
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
         String jsonString = objectMapper.writeValueAsString(rsEvent);
 
-        MvcResult result = mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        MvcResult result = mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
         assertEquals("0", result.getResponse().getHeader("index"));
@@ -373,7 +373,7 @@ class RsListApplicationTests {
         objectMapper.configure(MapperFeature.USE_ANNOTATIONS, false);
         String jsonString = objectMapper.writeValueAsString(rsEvent);
 
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(get("/rs/list"))
@@ -395,7 +395,7 @@ class RsListApplicationTests {
         String jsonString = "{\"eventName\":\"添加一条热搜\",\"keyWord\":\"娱乐\",\"user\": {\"user_name\":\"xiaowang\",\"user_age\": 19,\"user_gender\": \"female\",\"user_email\": \"a@thoughtworks.com\",\"user_phone\": \"18888888888\"}}";
 
 
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
         mockMvc.perform(get("/rs/userList"))
@@ -420,7 +420,7 @@ class RsListApplicationTests {
     public void should_throw_param_invalid_exception() throws Exception {
         String jsonString = "{\"eventName\":\"添加一条热搜\",\"keyWord\":\"娱乐\",\"user\": {\"user_name\":\"xiaowang1\",\"user_age\": 19,\"user_gender\": \"female\",\"user_email\": \"a@thoughtworks.com\",\"user_phone\": \"18888888888\"}}";
 
-        mockMvc.perform(post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/rs/event").content(jsonString).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid param")));
     }
@@ -443,7 +443,7 @@ class RsListApplicationTests {
     @Test
     public void should_add_rs_event_and_user_registered() throws Exception {
         String jsonString = "{\"eventName\":\"添加一条热搜\",\"keyWord\":\"娱乐\",\"userId\": 666}";
-        mockMvc.perform(post("/rs/addEvent")
+        mockMvc.perform(post("/rs/event")
                 .content(jsonString)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -452,13 +452,13 @@ class RsListApplicationTests {
     @Test
     public void should_update_rs_event() throws Exception {
         String jsonString = "{\"eventName\":\"添加一条热搜\",\"keyWord\":\"娱乐\",\"userId\": 666}";
-        mockMvc.perform(patch("/rs/update/" + rsEventDto.getId())
+        mockMvc.perform(patch("/rs/" + rsEventDto.getId())
                 .content(jsonString)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
         jsonString = "{\"eventName\":\"添加一条热搜\",\"userId\": "+ rsEventDto.getUserId() + "}";
-        mockMvc.perform(patch("/rs/update/" + rsEventDto.getId())
+        mockMvc.perform(patch("/rs/" + rsEventDto.getId())
                 .content(jsonString)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -468,7 +468,7 @@ class RsListApplicationTests {
         assertEquals(rsEventDtoTemp.getKeyWord(), "经济");
 
         jsonString = "{\"keyWord\":\"其它\",\"userId\": "+ rsEventDto.getUserId() + "}";
-        mockMvc.perform(patch("/rs/update/" + rsEventDto.getId())
+        mockMvc.perform(patch("/rs/" + rsEventDto.getId())
                 .content(jsonString)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -478,7 +478,7 @@ class RsListApplicationTests {
         assertEquals(rsEventDtoTemp.getKeyWord(), "其它");
 
         jsonString = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\": "+ rsEventDto.getUserId() + "}";
-        mockMvc.perform(patch("/rs/update/" + rsEventDto.getId())
+        mockMvc.perform(patch("/rs/" + rsEventDto.getId())
                 .content(jsonString)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

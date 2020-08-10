@@ -45,7 +45,7 @@ public class RsController {
   }
 
 
-  @PostMapping("/rs/addEvent")
+  @PostMapping("/rs/event")
   public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
     if (!userService.isExistUser(rsEvent.getUserId())) {
       return ResponseEntity.badRequest().build();
@@ -55,7 +55,7 @@ public class RsController {
   }
 
 
-  @PatchMapping("/rs/update/{rsEventId}")
+  @PatchMapping("/rs/{rsEventId}")
   public ResponseEntity updateEvent(@PathVariable int rsEventId, @RequestBody @Valid RsEvent rsEvent) {
 
     if (!rsService.isSameUserId(rsEventId, rsEvent.getUserId())) {
@@ -66,7 +66,7 @@ public class RsController {
   }
 
 
-  @DeleteMapping("/rs/deleteEvent")
+  @DeleteMapping("/rs/event")
   public ResponseEntity deleteRsEvent(@RequestParam int id) {
     rsService.deleteRsEvent(id);
     return ResponseEntity.ok().build();

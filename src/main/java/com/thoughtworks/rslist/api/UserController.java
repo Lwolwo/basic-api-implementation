@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @DeleteMapping("/user/delete")
+    @DeleteMapping("/user")
     public ResponseEntity deleteUserById(@RequestParam int id) {
         userService.deleteUserById(id);
         return ResponseEntity.ok().build();
