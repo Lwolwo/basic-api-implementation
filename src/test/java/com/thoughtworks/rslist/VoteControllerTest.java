@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.*;
 import org.springframework.test.web.servlet.*;
 
 import java.time.*;
+import java.time.format.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -120,6 +121,37 @@ class VoteControllerTest {
                 .andExpect(jsonPath("$[0].voteNum", is(6)))
                 .andExpect(jsonPath("$[1].voteNum", is(7)))
                 .andExpect(jsonPath("$[2].voteNum", is(8)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void should_get_vote_record_between_time() throws Exception {
+        voteRepository.deleteAll();
+        for (int i = 0; i < 8; i++) {
+            VoteDto voteDto = VoteDto.builder()
+                    .time(LocalDateTime.of(2020, 8 , (i + 1), 20, 00, 00))
+                    .user(userDto)
+                    .rsEvent(rsEventDto)
+                    .voteNum(i + 1)
+                    .build();
+            voteRepository.save(voteDto);
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime startTime = LocalDateTime.of(2020, 8 , 1, 19, 59, 59);
+        LocalDateTime endTime = LocalDateTime.of(2020, 8 , 5, 20, 00, 01);
+        String startTimeString = startTime.format(formatter);
+        String endTimeString = endTime.format(formatter);
+
+        mockMvc.perform(get("/voteRecordTime")
+                .param("startTimeString", startTimeString)
+                .param("endTimeString", endTimeString))
+                .andExpect(jsonPath("$", hasSize(5)))
+                .andExpect(jsonPath("$[0].voteNum", is(1)))
+                .andExpect(jsonPath("$[1].voteNum", is(2)))
+                .andExpect(jsonPath("$[2].voteNum", is(3)))
+                .andExpect(jsonPath("$[3].voteNum", is(4)))
+                .andExpect(jsonPath("$[4].voteNum", is(5)))
                 .andExpect(status().isOk());
     }
 }
