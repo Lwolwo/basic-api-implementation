@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.domain.*;
 import com.thoughtworks.rslist.dto.*;
 import com.thoughtworks.rslist.repository.*;
+import com.thoughtworks.rslist.service.*;
 import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.data.repository.query.*;
@@ -19,31 +20,22 @@ import java.util.*;
 @RestController
 public class UserController {
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RsEventRepository rsEventRepository;
+    UserService userService;
 
     @PostMapping("/user")
     public ResponseEntity registerUser(@RequestBody @Valid User user) {
-        UserDto userDto = UserDto.builder()
-                .userName(user.getUserName())
-                .gender(user.getGender())
-                .age(user.getAge())
-                .email(user.getEmail())
-                .phone(user.getPhone()).build();
-
-        userRepository.save(userDto);
+        userService.addUser(user);
         return ResponseEntity.ok(null);
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity getUserById(@PathVariable int id) {
-        return ResponseEntity.ok(userRepository.findById(id).get());
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @DeleteMapping("/user/delete")
     public ResponseEntity deleteUserById(@RequestParam int id) {
-        userRepository.deleteById(id);
+        userService.deleteUserById(id);
         return ResponseEntity.ok().build();
     }
 

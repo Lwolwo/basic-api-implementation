@@ -137,19 +137,22 @@ class RsListApplicationTests {
                 .andExpect(status().isOk());
     }
 
+    @Test
     @Order(4)
     void should_add_rs_event() throws Exception {
-//        String jsonString = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\"}";
-
-        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济");
+        RsEvent rsEvent = RsEvent.builder()
+                .eventName("猪肉涨价了")
+                .keyWord("经济")
+                .userId(userDto.getId())
+                .build();
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonString = objectMapper.writeValueAsString(rsEvent);
 
         mockMvc.perform(
                 post("/rs/addEvent").content(jsonString).contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isOk());
+        ).andExpect(status().isCreated());
 
-        mockMvc.perform(get("/rs/4"))
+        mockMvc.perform(get("/rs/2"))
                 .andExpect(jsonPath("$.eventName", is("猪肉涨价了")))
                 .andExpect(jsonPath("$.keyWord", is("经济")))
                 .andExpect(status().isOk());
@@ -374,10 +377,10 @@ class RsListApplicationTests {
                 .andExpect(status().isCreated());
 
         mockMvc.perform(get("/rs/list"))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].eventName", is("添加一条热搜")))
-                .andExpect(jsonPath("$[0].keyWord", is("娱乐")))
-                .andExpect(jsonPath("$[0]", not(hasKey("user"))))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[1].eventName", is("添加一条热搜")))
+                .andExpect(jsonPath("$[1].keyWord", is("娱乐")))
+                .andExpect(jsonPath("$[1]", not(hasKey("user"))))
                 .andExpect(status().isOk());
     }
 

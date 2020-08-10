@@ -4,6 +4,7 @@ import com.thoughtworks.rslist.domain.*;
 import com.thoughtworks.rslist.dto.*;
 import com.thoughtworks.rslist.exception.*;
 import com.thoughtworks.rslist.repository.*;
+import com.thoughtworks.rslist.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -15,22 +16,20 @@ import java.util.*;
 @RestController
 public class RsController {
   @Autowired
-  RsEventRepository rsEventRepository;
+  RsService rsService;
   @Autowired
-  UserRepository userRepository;
-  @Autowired
-  VoteRepository voteRepository;
+  UserService userService;
 
   @GetMapping("/rs/list")
   public ResponseEntity getRsList(@RequestParam(required = false) Integer start,
                                   @RequestParam(required = false) Integer end) {
     if (start != null && end != null) {
-      if (start <= 0 || end > rsEventRepository.findAll().size() || start > end) {
+      if (rsService.isIndexValid(start, end)) {
         throw new RsEventInvalidException("invalid request param");
       }
-      return ResponseEntity.ok(rsEventRepository.findAll().subList(start - 1, end));
+      return ResponseEntity.ok(rsService.getRsEventListBetweenStartAndEnd(start - 1, end));
     }
-    return ResponseEntity.ok(rsEventRepository.findAll());
+    return ResponseEntity.ok(rsService.getRsEventList());
   }
 
   @GetMapping("/rs/{id}")
@@ -38,74 +37,41 @@ public class RsController {
     if (id < 1) {
       throw new RsEventInvalidException("invalid index");
     }
-    return ResponseEntity.ok(rsEventRepository.findById(id).get());
+    return ResponseEntity.ok(rsService.getOneOfEvent(id));
   }
 
 
   @PostMapping("/rs/addEvent")
   public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
-    if (!userRepository.findById(rsEvent.getUserId()).isPresent()) {
+    if (!userService.isExistUser(rsEvent.getUserId())) {
       return ResponseEntity.badRequest().build();
     }
-    RsEventDto rsEventDto = RsEventDto.builder()
-            .keyWord(rsEvent.getKeyWord())
-            .eventName(rsEvent.getEventName())
-            .userId(rsEvent.getUserId())
-            .build();
-    rsEventRepository.save(rsEventDto);
-
+    rsService.createEvent(rsEvent);
     return ResponseEntity.created(null).build();
   }
 
 
   @PatchMapping("/rs/update/{rsEventId}")
   public ResponseEntity updateEvent(@PathVariable int rsEventId, @RequestBody @Valid RsEvent rsEvent) {
-    RsEventDto rsEventDto = rsEventRepository.findById(rsEventId).get();
-    if (rsEventDto.getUserId() != rsEvent.getUserId()) {
+
+    if (!rsService.isSameUserId(rsEventId, rsEvent.getUserId())) {
       return ResponseEntity.badRequest().build();
     }
-    if (rsEvent.getKeyWord() != null) {
-      rsEventDto.setKeyWord(rsEvent.getKeyWord());
-    }
-    if (rsEvent.getEventName() != null) {
-      rsEventDto.setEventName(rsEvent.getEventName());
-    }
-
-    rsEventRepository.save(rsEventDto);
+    rsService.updateEvent(rsEventId, rsEvent);
     return ResponseEntity.ok().build();
   }
 
 
   @DeleteMapping("/rs/deleteEvent")
   public ResponseEntity deleteRsEvent(@RequestParam int id) {
-    rsEventRepository.deleteById(id);
+    rsService.deleteRsEvent(id);
     return ResponseEntity.ok().build();
   }
 
   @GetMapping("/rs/userList")
   public ResponseEntity getUserList() {
-    return ResponseEntity.ok(userRepository.findAll());
+    return ResponseEntity.ok(rsService.getRsEventList());
   }
 
-  @PostMapping("/rs/vote/{rsEventId}")
-  public ResponseEntity voteRsEvent(@PathVariable int rsEventId, @RequestBody Vote vote) {
-    UserDto userDto = userRepository.findById(vote.getUserId()).get();
-    RsEventDto rsEventDto = rsEventRepository.findById(rsEventId).get();
-    if (userDto.getVoteNum() >= vote.getVoteNum()) {
-      VoteDto voteDto = VoteDto.builder()
-              .voteNum(vote.getVoteNum())
-              .rsEvent(rsEventDto)
-              .user(userDto)
-              .time(vote.getTime())
-              .build();
-      userDto.setVoteNum(userDto.getVoteNum() - vote.getVoteNum());
-      rsEventDto.setVoteNum(vote.getVoteNum());
-      userRepository.save(userDto);
-      rsEventRepository.save(rsEventDto);
-      voteRepository.save(voteDto);
-      return ResponseEntity.ok().build();
-    }
-    return ResponseEntity.badRequest().build();
-  }
 
 }

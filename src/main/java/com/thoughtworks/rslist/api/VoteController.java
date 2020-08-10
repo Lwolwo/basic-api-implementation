@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.domain.*;
 import com.thoughtworks.rslist.dto.*;
 import com.thoughtworks.rslist.repository.*;
+import com.thoughtworks.rslist.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
@@ -18,25 +19,25 @@ import java.util.stream.*;
 @RestController
 public class VoteController {
     @Autowired
-    VoteRepository voteRepository;
+    VoteService voteService;
 
     @GetMapping("/voteRecord")
     public ResponseEntity getVoteRecord(@RequestParam int userId, @RequestParam int rsEventId, @RequestParam int pageIndex) {
-        Pageable pageable = PageRequest.of(pageIndex - 1, 5);
-        return ResponseEntity.ok(
-                voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId, pageable).stream().map(
-                        item -> Vote.builder().voteNum(item.getVoteNum()).userId(item.getUser().getId())
-                        .rsEventId(item.getRsEvent().getId()).time(item.getTime()).build()
-                ).collect(Collectors.toList())
-        );
+        return ResponseEntity.ok(voteService.getVoteList(userId, rsEventId, pageIndex));
     }
 
     @GetMapping("/voteRecordTime")
     public ResponseEntity getVoteRecordBetweenGivenTime(@RequestParam String startTimeString, @RequestParam String endTimeString) {
-        LocalDateTime startTime = LocalDateTime.parse(startTimeString);
-        LocalDateTime endTime = LocalDateTime.parse(endTimeString);
-        List<VoteDto> voteDtos = voteRepository.findAll(startTime, endTime);
+        return ResponseEntity.ok(voteService.getVoteListByTime(startTimeString, endTimeString));
+    }
 
-        return ResponseEntity.ok(voteDtos);
+    @PostMapping("/rs/vote/{rsEventId}")
+    public ResponseEntity voteRsEvent(@PathVariable int rsEventId, @RequestBody Vote vote) {
+        if (voteService.userCanVote(rsEventId, vote)) {
+            voteService.vote(rsEventId, vote);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
+
     }
 }
