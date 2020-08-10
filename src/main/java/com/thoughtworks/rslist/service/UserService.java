@@ -5,7 +5,7 @@ import com.thoughtworks.rslist.dto.*;
 import com.thoughtworks.rslist.repository.*;
 import org.springframework.stereotype.*;
 
-@Service
+//@Service
 public class UserService {
     UserRepository userRepository;
 

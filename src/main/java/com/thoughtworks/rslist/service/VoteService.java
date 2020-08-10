@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.service;
 import com.thoughtworks.rslist.domain.*;
 import com.thoughtworks.rslist.dto.*;
 import com.thoughtworks.rslist.repository.*;
+import org.springframework.context.annotation.*;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;
@@ -11,7 +12,7 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.*;
 
-@Service
+//@Service
 public class VoteService {
 
     private UserRepository userRepository;

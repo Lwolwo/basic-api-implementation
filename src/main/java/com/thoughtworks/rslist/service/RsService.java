@@ -7,7 +7,7 @@ import org.springframework.stereotype.*;
 
 import java.util.*;
 
-@Service
+//@Service
 public class RsService {
     RsEventRepository rsEventRepository;
 
