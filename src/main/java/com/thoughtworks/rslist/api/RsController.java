@@ -15,10 +15,14 @@ import java.util.*;
 
 @RestController
 public class RsController {
-  @Autowired
   RsService rsService;
-  @Autowired
   UserService userService;
+
+  public RsController(RsService rsService, UserService userService) {
+    this.rsService = rsService;
+    this.userService = userService;
+  }
+
 
   @GetMapping("/rs/list")
   public ResponseEntity getRsList(@RequestParam(required = false) Integer start,

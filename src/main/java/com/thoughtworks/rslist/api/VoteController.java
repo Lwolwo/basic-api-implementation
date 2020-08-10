@@ -18,8 +18,11 @@ import java.util.stream.*;
 
 @RestController
 public class VoteController {
-    @Autowired
     VoteService voteService;
+
+    public VoteController(VoteService voteService) {
+        this.voteService = voteService;
+    }
 
     @GetMapping("/voteRecord")
     public ResponseEntity getVoteRecord(@RequestParam int userId, @RequestParam int rsEventId, @RequestParam int pageIndex) {

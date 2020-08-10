@@ -19,8 +19,12 @@ import java.util.*;
 
 @RestController
 public class UserController {
-    @Autowired
     UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
 
     @PostMapping("/user")
     public ResponseEntity registerUser(@RequestBody @Valid User user) {
